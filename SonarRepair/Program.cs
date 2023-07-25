@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using SonarRepair;
+using System.Net;
 using YamlDotNet.RepresentationModel;
 
 Console.WriteLine("Yaml file path : ");
@@ -111,18 +112,20 @@ static void ProcessYaml(YamlMappingNode nodes, YamlMappingNode schemas)
                                 switch (itemType)
                                 {
                                     case "string":
-                                        value = $"[sample-{objVal}]";
+                                        value = objVal["description"].ToString();
                                         style = YamlDotNet.Core.ScalarStyle.DoubleQuoted;
                                         break;
 
                                     case "integer":
                                     case "number":
-                                        value = "[1]";
+                                        value = "1";
                                         break;
 
                                     case "boolean":
-                                        value = "[true]";
+                                        value = "true";
                                         break;
+                                    default:
+                                        continue;
                                 }
                             }
                             else
@@ -211,7 +214,7 @@ static void SetObjectExample(YamlMappingNode? props, YamlMappingNode? objVal, Ya
             string value = "test";
             YamlDotNet.Core.ScalarStyle style = YamlDotNet.Core.ScalarStyle.Plain;
 
-            if (e.Value.ToString().Contains("format") && e.Value["format"].ToString() == "date-time")
+            if (e.Value.ToString().Contains("{ format,") && e.Value["format"].ToString() == "date-time")
             {
                 value = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
                 style = YamlDotNet.Core.ScalarStyle.DoubleQuoted;
@@ -242,19 +245,30 @@ static void SetObjectExample(YamlMappingNode? props, YamlMappingNode? objVal, Ya
                             switch (itemType)
                             {
                                 case "string":
-                                    value = $"[sample-{e.Key}]";
+                                    value = $"sample-{e.Key}";
                                     style = YamlDotNet.Core.ScalarStyle.DoubleQuoted;
                                     break;
 
                                 case "integer":
                                 case "number":
-                                    value = "[1]";
+                                    value = "1";
                                     break;
 
                                 case "boolean":
-                                    value = "[true]";
+                                    value = "true";
                                     break;
+                                default:
+                                    continue;
                             }
+
+                            YamlScalarNode scalNode = new()
+                            {
+                                Value = value,
+                                Style = style
+                            };
+                            YamlSequenceNode seq = new YamlSequenceNode { scalNode };
+                            nds.Add(e.Key.ToString(), seq);
+                            continue;
                         }
                         else
                         {
@@ -280,7 +294,6 @@ static void SetObjectExample(YamlMappingNode? props, YamlMappingNode? objVal, Ya
                             }
                             break;
                         }
-                        break;
                     case "href":
                         YamlScalarNode comp = (YamlScalarNode)e.Value["$ref"];
                         if (comp is null)
@@ -343,7 +356,7 @@ static YamlMappingNode ConstructExample(YamlMappingNode? props, YamlMappingNode 
         string value = "test";
         YamlDotNet.Core.ScalarStyle style = YamlDotNet.Core.ScalarStyle.Plain;
 
-        if (e.Value.ToString().Contains("format") && e.Value["format"].ToString() == "date-time")
+        if (e.Value.ToString().Contains("{ format,") && e.Value["format"].ToString() == "date-time")
         {
             value = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
             style = YamlDotNet.Core.ScalarStyle.DoubleQuoted;
@@ -374,19 +387,30 @@ static YamlMappingNode ConstructExample(YamlMappingNode? props, YamlMappingNode 
                         switch (itemType)
                         {
                             case "string":
-                                value = $"[sample-{e.Key}]";
+                                value = $"sample-{e.Key}";
                                 style = YamlDotNet.Core.ScalarStyle.DoubleQuoted;
                                 break;
 
                             case "integer":
                             case "number":
-                                value = "[1]";
+                                value = "1";
                                 break;
 
                             case "boolean":
-                                value = "[true]";
+                                value = "true";
                                 break;
+                            default:
+                                continue;
                         }
+
+                        YamlScalarNode scalNode = new()
+                        {
+                            Value = value,
+                            Style = style
+                        };
+                        YamlSequenceNode seq = new YamlSequenceNode { scalNode };
+                        reslt.Add(e.Key.ToString(), seq);
+                        continue;
                     }
                     else
                     {
@@ -412,7 +436,6 @@ static YamlMappingNode ConstructExample(YamlMappingNode? props, YamlMappingNode 
                         }
                         break;
                     }
-                    break;
                 case "href":
                     YamlScalarNode comp = (YamlScalarNode)e.Value["$ref"];
                     if (comp is null)
@@ -448,7 +471,16 @@ static YamlMappingNode ConstructExample(YamlMappingNode? props, YamlMappingNode 
             Value = value,
             Style = style
         };
-        reslt.Add(e.Key.ToString(), expNode);
+
+        if (type == "array")
+        {
+            YamlSequenceNode seq = new YamlSequenceNode { expNode };
+            reslt.Add(e.Key.ToString(), expNode);
+        }
+        else
+        {
+            reslt.Add(e.Key.ToString(), expNode);
+        }
     }
 
     return reslt;
