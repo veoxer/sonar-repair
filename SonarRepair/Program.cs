@@ -97,7 +97,7 @@ static void ProcessYaml(YamlMappingNode nodes, YamlMappingNode schemas)
 
                         case "integer":
                         case "number":
-                            value = "1";
+                            value = $"{Helper.GenerateNumber()}";
                             break;
 
                         case "boolean":
@@ -118,7 +118,7 @@ static void ProcessYaml(YamlMappingNode nodes, YamlMappingNode schemas)
 
                                     case "integer":
                                     case "number":
-                                        value = "1";
+                                        value = $"{Helper.GenerateNumber()}";
                                         break;
 
                                     case "boolean":
@@ -230,7 +230,7 @@ static void SetObjectExample(YamlMappingNode? props, YamlMappingNode? objVal, Ya
 
                     case "integer":
                     case "number":
-                        value = "1";
+                        value = $"{Helper.GenerateNumber()}";
                         break;
 
                     case "boolean":
@@ -251,7 +251,7 @@ static void SetObjectExample(YamlMappingNode? props, YamlMappingNode? objVal, Ya
 
                                 case "integer":
                                 case "number":
-                                    value = "1";
+                                    value = $"{Helper.GenerateNumber()}";
                                     break;
 
                                 case "boolean":
@@ -372,7 +372,7 @@ static YamlMappingNode ConstructExample(YamlMappingNode? props, YamlMappingNode 
 
                 case "integer":
                 case "number":
-                    value = "1";
+                    value = $"{Helper.GenerateNumber()}";
                     break;
 
                 case "boolean":
@@ -393,7 +393,7 @@ static YamlMappingNode ConstructExample(YamlMappingNode? props, YamlMappingNode 
 
                             case "integer":
                             case "number":
-                                value = "1";
+                                value = $"{Helper.GenerateNumber()}";
                                 break;
 
                             case "boolean":

@@ -16,5 +16,11 @@ namespace SonarRepair
             "$1 $2"
             );
         }
+
+        public static int GenerateNumber()
+        {
+            Random rnd = new Random();
+            return rnd.Next(1, 100);
+        }
     }
 }
